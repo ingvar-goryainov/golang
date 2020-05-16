@@ -1,0 +1,20 @@
+- hosts: localhost
+  tasks:
+    - name: Create a k8s namespace
+      k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Namespace
+          metadata:
+            name: test-namespace
+
+    - name: Generate k8s objects
+      k8s:
+        state: present
+        definition: "{{ lookup('template', 'k8s-manifests/{{ item }}.yml') }}"
+        validate_certs: no
+        namespace: test-namespace
+      loop:
+        - deployment.yml
+        - service.yml
